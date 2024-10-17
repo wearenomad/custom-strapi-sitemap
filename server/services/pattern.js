@@ -122,6 +122,15 @@ const getRelationsFromPattern = (pattern) => {
  * @returns {string} The path.
  */
 
+function removeLocaleFromSlug(slug) {
+  const localeRegex = /-(en|es|de|fr|it|ru|ja|tr|pt(-BR|-br)?)$/;
+  if (localeRegex.test(slug)) {
+      return slug.replace(localeRegex, '');
+  }
+  return slug;
+}
+
+
 const resolvePattern = async (pattern, entity) => {
   const fields = getFieldsFromPattern(pattern);
   let errorInPattern = false;
@@ -135,7 +144,7 @@ const resolvePattern = async (pattern, entity) => {
         errorInPattern = true;
         return;
       }
-      pattern = pattern.replace(`[${field}]`, replacement);
+      pattern = pattern.replace(`[${field}]`, removeLocaleFromSlug(replacement));
     } else if (Array.isArray(entity[relationalField[0]])) {
       strapi.log.error(logMessage('Something went wrong whilst resolving the pattern.'));
     } else if (typeof entity[relationalField[0]] === 'object') {
